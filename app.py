@@ -1,11 +1,8 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
 
-# -------------------------------
-# 1. Load model
-# -------------------------------
+# Load Random Forest model
 @st.cache_resource
 def load_model():
     model = joblib.load("random_forest_model.joblib")
@@ -13,17 +10,12 @@ def load_model():
 
 model = load_model()
 
-# -------------------------------
-# 2. Streamlit App
-# -------------------------------
-st.set_page_config(page_title="Crop Yield Prediction", page_icon="🌾", layout="centered")
-
+# Streamlit UI
+st.set_page_config(page_title="Crop Yield Prediction", layout="centered")
 st.title("🌾 Crop Yield Prediction App")
-st.write("Enter the details below to predict crop yield (hg/ha_yield).")
+st.write("Enter crop details to predict yield.")
 
-# -------------------------------
-# 3. User Input Form
-# -------------------------------
+# User inputs
 with st.form("prediction_form"):
     col1, col2 = st.columns(2)
 
@@ -39,15 +31,10 @@ with st.form("prediction_form"):
 
     submit = st.form_submit_button("🔍 Predict")
 
-# -------------------------------
-# 4. Prediction
-# -------------------------------
 if submit:
-    input_data = pd.DataFrame(
+    input_df = pd.DataFrame(
         [[area, item, year, rainfall, pesticides, avg_temp]],
         columns=["Area", "Item", "Year", "average_rain_fall_mm_per_year", "pesticides_tonnes", "avg_temp"]
     )
-
-    prediction = model.predict(input_data)[0]
-
+    prediction = model.predict(input_df)[0]
     st.success(f"🌱 Predicted Yield: **{prediction:.2f} hg/ha**")
